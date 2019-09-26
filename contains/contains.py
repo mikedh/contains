@@ -2,28 +2,47 @@ import numpy as np
 from triangle_hash import TriangleHash as _TriangleHash
 
 
-def mesh_contains(mesh, points, hash_resolution=512):
+def mesh_contains(mesh, points, resolution=512):
     """
+    Evaluate whether points lie inside a mesh or not.
+
+    Parameters
+    -------------
+    mesh : trimesh.Trimesh
+      Triangular mesh geometry
+    points : (n, 3) float
+      Points in space
+    resolution : int
+      How finely to sample space
     
+    Returns
+    ------------
+    contains : (n,) bool
+      Is the point "inside" the mesh
     """
-    intersector = MeshIntersector(mesh, hash_resolution)
+    intersector = MeshIntersector(mesh=mesh, resolution=resolution)
     contains = intersector.query(points)
     return contains
 
 
 class MeshIntersector:
     def __init__(self, mesh, resolution=512):
-        triangles = mesh.vertices[mesh.faces].astype(np.float64)
+        # save the passed resolution
+        self.resolution = int(resolution)
+
+        # get the triangles from the mesh
+        triangles = mesh.triangles.view(np.float64).copy()
         n_tri = triangles.shape[0]
 
-        self.resolution = resolution
-        self.bbox_min = triangles.reshape(3 * n_tri, 3).min(axis=0)
-        self.bbox_max = triangles.reshape(3 * n_tri, 3).max(axis=0)
-        # Tranlate and scale it to [0.5, self.resolution - 0.5]^3
-        self.scale = (resolution - 1) / (self.bbox_max - self.bbox_min)
-        self.translate = 0.5 - self.scale * self.bbox_min
+        # find the bounding box containing all triangles
+        flat = triangles.reshape((-1, 3))
+        self.bounds = [flat.min(axis=0), flat.max(axis=0)]
 
-        self._triangles = triangles = self.rescale(triangles)
+        # Translate and scale it to [0.5, self.resolution - 0.5]^3
+        self.scale = (resolution - 1) / (self.bounds[1] - self.bounds[0])
+        self.translate = 0.5 - self.scale * self.bounds[0]
+
+        self._triangles = self.rescale(triangles)
         # assert(np.allclose(triangles.reshape(-1, 3).min(0), 0.5))
         # assert(np.allclose(triangles.reshape(-1, 3).max(0), resolution - 0.5))
 

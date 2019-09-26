@@ -20,8 +20,8 @@ setup(
     description="Compiled point-in-mesh queries",
     long_description=long_description,
     url="https://github.com/mikedh/contains",
-    author="",
-    author_email="",
+    author="Lars Mescheder",
+    author_email="LarsMescheder@gmx.net",
     keywords="geometry",
     classifiers=[
         "Development Status :: 1 - Planning",
