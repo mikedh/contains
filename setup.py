@@ -5,10 +5,10 @@ from setuptools import setup, Extension
 # Get the current directory
 here = os.path.abspath(os.path.dirname(__file__))
 # Get the long description from the README
-with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), 'r') as f:
     long_description = f.read()
 # Load __version__ cleanly
-with open(os.path.join(here, 'contains/version.py')) as f:
+with open(os.path.join(here, 'contains/version.py'), 'r') as f:
     exec(f.read())
 
 setup(
