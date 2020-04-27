@@ -1,6 +1,7 @@
 import os
 
 from setuptools import setup, Extension
+from Cython.Build import cythonize
 
 # Get the current directory
 here = os.path.abspath(os.path.dirname(__file__))
@@ -14,12 +15,7 @@ with open(os.path.join(here, 'contains/version.py'), 'r') as f:
 setup(
     name="contains",
     version=__version__,
-    ext_modules=[
-        Extension(
-            "triangle_hash",
-            ["contains/triangle_hash.pyx"],
-            language="c++")
-    ],
+    ext_modules=cythonize("contains/triangle_hash.pyx"),
     description="Compiled point-in-mesh queries",
     long_description=long_description,
     url="https://github.com/mikedh/contains",
@@ -27,9 +23,10 @@ setup(
     author_email="LarsMescheder@gmx.net",
     maintainer="Michael Dawson-Haggerty",
     maintainer_email="mikedh@kerfed.com",
+    packages=["contains"],
     keywords="geometry",
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Intended Audience :: Developers",
-    ],
+        "Intended Audience :: Developers"],
+    install_requires=["numpy"]
 )
