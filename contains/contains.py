@@ -14,7 +14,7 @@ def mesh_contains(mesh, points, resolution=512):
       Points in space
     resolution : int
       How finely to sample space
-    
+
     Returns
     ------------
     contains : (n,) bool
@@ -47,7 +47,8 @@ class MeshIntersector:
         # assert(np.allclose(triangles.reshape(-1, 3).max(0), resolution - 0.5))
 
         triangles2d = triangles[:, :, :2]
-        self._tri_intersector2d = TriangleIntersector2d(triangles2d, resolution)
+        self._tri_intersector2d = TriangleIntersector2d(
+            triangles2d, resolution)
 
     def query(self, points):
         # Rescale points
@@ -58,7 +59,10 @@ class MeshIntersector:
 
         # cull points outside of the axis aligned bounding box
         # this avoids running ray tests unless points are close
-        inside_aabb = np.all((0 <= points) & (points <= self.resolution), axis=1)
+        inside_aabb = np.all(
+            (0 <= points) & (
+                points <= self.resolution),
+            axis=1)
         if not inside_aabb.any():
             return contains
 
@@ -67,7 +71,8 @@ class MeshIntersector:
         points = points[mask]
 
         # Compute intersection depth and check order
-        points_indices, tri_indices = self._tri_intersector2d.query(points[:, :2])
+        points_indices, tri_indices = self._tri_intersector2d.query(
+            points[:, :2])
 
         triangles_intersect = self._triangles[tri_indices]
         points_intersect = points[points_indices]
@@ -114,7 +119,8 @@ class MeshIntersector:
         mask = abs_n_2 != 0
 
         depth_intersect = np.full(points.shape[0], np.nan)
-        depth_intersect[mask] = t1_2[mask] * abs_n_2[mask] + alpha[mask] * s_n_2[mask]
+        depth_intersect[mask] = t1_2[mask] * \
+            abs_n_2[mask] + alpha[mask] * s_n_2[mask]
 
         # Test the depth:
         # TODO: remove and put into tests
