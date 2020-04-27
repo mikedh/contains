@@ -2,7 +2,7 @@ import numpy as np
 from triangle_hash import TriangleHash as _TriangleHash
 
 
-def mesh_contains(mesh, points, resolution=512):
+def mesh_contains(triangles, points, resolution=512):
     """
     Evaluate whether points lie inside a mesh or not.
 
@@ -20,18 +20,18 @@ def mesh_contains(mesh, points, resolution=512):
     contains : (n,) bool
       Is the point "inside" the mesh
     """
-    intersector = MeshIntersector(mesh=mesh, resolution=resolution)
+    intersector = MeshIntersector(triangles=triangles, resolution=resolution)
     contains = intersector.query(points)
     return contains
 
 
 class MeshIntersector:
-    def __init__(self, mesh, resolution=512):
+    def __init__(self, triangles, resolution=512):
         # save the passed resolution
         self.resolution = int(resolution)
 
-        # get the triangles from the mesh
-        triangles = mesh.triangles.view(np.float64).copy()
+        # copy input triangles
+        triangles = np.array(triangles, dtype=np.float64)
         n_tri = triangles.shape[0]
 
         # find the bounding box containing all triangles
